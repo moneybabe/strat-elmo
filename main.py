@@ -3,8 +3,9 @@ from PIL import Image
 import pytesseract
 import pandas as pd
 import os
+import sys
 
-PATH = "images/open_orders/" # Path to image
+PATH = "images/close_orders/" # Path to image
 
 
 def crop_image(filename):
@@ -102,5 +103,9 @@ def export_close_orders(PATH):
     df.to_csv("close_orders.csv", index=False)
 
 if __name__ == "__main__":
-    # export_close_orders(PATH)
-    export_open_orders(PATH)
+    if sys.argv[1] == "close":
+        export_close_orders(PATH)
+    elif sys.argv[1] == "open":
+        export_open_orders(PATH)
+    else:
+        print("Invalid argument")
