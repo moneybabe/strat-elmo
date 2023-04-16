@@ -88,6 +88,8 @@ def export_open_orders(PATH):
     
     df.to_csv("open_orders.csv", index=False)
 
+    return df
+
 
 def export_close_orders(PATH):
     img_list = []
@@ -101,6 +103,8 @@ def export_close_orders(PATH):
         df = pd.concat([df, close_order_df(spliited_text)], ignore_index=True)
     
     df.to_csv("close_orders.csv", index=False)
+
+    return df
 
 if __name__ == "__main__":
     if sys.argv[1] == "close":
