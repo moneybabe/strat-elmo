@@ -48,7 +48,7 @@ def close_order_df(splitted_text):
     data = {}
     count = 0
     if len(splitted_text)%10 != 0:
-        splitted_text += [None] * (10 - (len(splitted_text) % 10))
+        splitted_text += splitted_text[-1] * (10 - (len(splitted_text) % 10))
 
     for column in columns:
         data[column] = splitted_text[count * 10: (count + 1) * 10]
