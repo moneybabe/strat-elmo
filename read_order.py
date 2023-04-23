@@ -11,8 +11,7 @@ class ReadOrder:
 
     def __init__(self, PATH="images/close_orders/"):
         self.PATH = PATH
-        self.open_df = pd.DataFrame()
-        self.close_df = pd.DataFrame()
+        self.df = pd.DataFrame()
 
 
     def __crop_image(self, filename):
@@ -56,16 +55,20 @@ class ReadOrder:
             df["Trade Time"] = df["Trade Date"] + " " + df["Trade Time"]
             df["Closing Direction"] = df["Closing Direction"] + " " + df["Direction"]
             df.drop(["Direction", "Coin", "Trade Date"], axis=1, inplace=True)
+            
+            df["Trade Time"] = pd.to_datetime(df["Trade Time"], format="%Y/%m/%d %H:%M:%S")
 
         else:
-            columns = ("Contracts", "Leverage", "Filled Type", "Filled/Total", "Filled Price/Order Price", "Fee Rate", "Fee Paid", "Trade Type", "Type", "Order Type", "Transaction ID", "Transaction Date", "Transaction Time")
+            columns = ("Contracts", "Leverage", "Filled Type", "Filled/Total", "Filled Price/Order Price", "Fee Rate", "Fee Paid", "Trade Type", "Type", "Order Type", "Trade ID", "Trade Date", "Trade Time")
             df = pd.DataFrame(split_text, columns=columns)
             df["Fee Paid"] = list(map(lambda x: float(x[:-1] if x[-1] == "." else x), df["Fee Paid"]))
             df["Leverage"] = list(map(lambda x: x.replace("4", "1"), df["Leverage"]))
             
             df["Trade Type"] = df["Trade Type"] + " " + df["Type"]
-            df["Transaction Time"] = df["Transaction Date"] + " " + df["Transaction Time"]
-            df.drop(["Type", "Transaction Date"], axis=1, inplace=True)
+            df["Trade Time"] = df["Trade Date"] + " " + df["Trade Time"]
+            df.drop(["Type", "Trade Date"], axis=1, inplace=True)
+
+            df["Trade Time"] = pd.to_datetime(df["Trade Time"], format="%Y/%m/%d %H:%M:%S")
 
         return df
 
@@ -78,14 +81,15 @@ class ReadOrder:
         for filename in img_list:
             cropped_img = self.__crop_image(filename)
             split_text = self.__scan_order(cropped_img)
-            self.close_df = pd.concat([self.close_df, self.__order_df(split_text, close)], ignore_index=True)
+            self.df = pd.concat([self.df, self.__order_df(split_text, close)], ignore_index=True)
+            self.df.sort_values(by="Trade Time", inplace=True)
         
         if close:
-            self.close_df.to_csv("close_orders.csv", index=False)
+            self.df.to_csv("close_orders.csv", index=False)
         else:
-            self.close_df.to_csv("open_orders.csv", index=False)
+            self.df.to_csv("open_orders.csv", index=False)
 
-        return self.close_df
+        return self.df
 
 
 if __name__ == "__main__":
