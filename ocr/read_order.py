@@ -85,9 +85,9 @@ class ReadOrder:
             self.df.sort_values(by="Trade Time", inplace=True)
         
         if close:
-            self.df.to_csv("close_orders.csv", index=False)
+            self.df.to_csv("trade_history/close_orders.csv", index=False)
         else:
-            self.df.to_csv("open_orders.csv", index=False)
+            self.df.to_csv("trade_history/open_orders.csv", index=False)
 
         return self.df
 
